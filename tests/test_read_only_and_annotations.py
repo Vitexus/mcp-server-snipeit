@@ -59,3 +59,31 @@ def test_read_only_mode_blocks_write_actions():
 
 def test_write_actions_include_core_mutations():
     assert {"create", "update", "delete", "checkout", "checkin"} <= WRITE_ACTIONS
+
+
+_CALL_OAUTH = """
+import asyncio
+from mcp_server_snipeit.mcp_server import mcp, _auth_provider
+assert _auth_provider is not None, "OAuth provider must be active in this test"
+try:
+    asyncio.run(mcp.call_tool("manage_assets", {"action": "delete", "asset_id": 1}))
+except Exception as exc:
+    print("ERR:", exc)
+"""
+
+
+def test_read_only_mode_is_enforced_with_oauth():
+    """Read-only must not be silently dropped when the OAuth branch is active."""
+    env = dict(
+        os.environ,
+        SNIPEIT_URL="http://snipe.invalid",
+        SNIPEIT_OAUTH_CLIENT_ID="cid",
+        SNIPEIT_OAUTH_CLIENT_SECRET="secret",
+        SNIPEIT_MCP_BASE_URL="https://mcp.invalid",
+        MCP_TRANSPORT="http",
+        SNIPEIT_READ_ONLY="true",
+    )
+    env.pop("SNIPEIT_TOKEN", None)
+    out = subprocess.run([sys.executable, "-W", "ignore", "-c", _CALL_OAUTH], env=env,
+                         capture_output=True, text=True)
+    assert "read-only" in out.stdout, (out.stdout, out.stderr[-500:])

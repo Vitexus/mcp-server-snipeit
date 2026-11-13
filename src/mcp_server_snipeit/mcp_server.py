@@ -107,7 +107,11 @@ _extra_middleware = [m for m in (_identity_middleware, _read_only_middleware) if
 
 if _auth_provider is not None:
     logger.info("Snipe-IT OAuth provider configured (interactive login enabled)")
-    mcp = FastMCP(name="Snipe-IT MCP Server", auth=_auth_provider)
+    mcp = FastMCP(
+        name="Snipe-IT MCP Server",
+        auth=_auth_provider,
+        middleware=_extra_middleware or None,
+    )
 elif _identity_middleware is not None:
     logger.info(
         "Multi-identity mode: %d identities, per-identity policy + audit logging active",
