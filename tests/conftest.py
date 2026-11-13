@@ -21,7 +21,7 @@ def mock_env():
 def mock_direct_api():
     # Tool modules import client as a module (``from .. import client``) and call
     # ``client.get_direct_api()`` — patching the source propagates to all tools.
-    with patch('snipeit_mcp.client.get_direct_api') as m:
+    with patch('mcp_server_snipeit.client.get_direct_api') as m:
         api = MagicMock()
         m.return_value = api
         yield api
@@ -29,7 +29,7 @@ def mock_direct_api():
 
 @pytest.fixture
 def mock_client():
-    with patch('snipeit_mcp.client.get_snipeit_client') as m:
+    with patch('mcp_server_snipeit.client.get_snipeit_client') as m:
         client = MagicMock()
         client.__enter__ = MagicMock(return_value=client)
         client.__exit__ = MagicMock(return_value=False)

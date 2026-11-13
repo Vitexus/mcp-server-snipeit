@@ -9,7 +9,7 @@ def get_tool_fn(tool):
 
 class TestManageAssets:
     async def test_manage_assets_schema_marks_object_inputs_as_objects(self):
-        import snipeit_mcp as server
+        import mcp_server_snipeit as server
 
         tool = await server.mcp.get_tool("manage_assets")
         params = tool.parameters["properties"]
@@ -26,7 +26,7 @@ class TestManageAssets:
         assert any(branch.get("type") == "object" for branch in extra_fields_schema["anyOf"])
 
     def test_create(self, mock_client, mock_direct_api):
-        from snipeit_mcp import manage_assets, AssetData
+        from mcp_server_snipeit import manage_assets, AssetData
         mock_direct_api._request.return_value = {"status": "success", "payload": {"id": 1, "asset_tag": "LAP-001", "name": "Test Laptop"}}
         result = get_tool_fn(manage_assets)(action="create", asset_data=AssetData(status_id=1, model_id=5, name="Test Laptop"))
         assert result["success"] is True
@@ -34,17 +34,17 @@ class TestManageAssets:
         mock_direct_api._request.assert_called_once_with("POST", "hardware", json={"status_id": 1, "model_id": 5, "name": "Test Laptop"})
 
     def test_create_missing_data(self, mock_client):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         result = get_tool_fn(manage_assets)(action="create")
         assert result["success"] is False
 
     def test_create_missing_required_fields(self, mock_client):
-        from snipeit_mcp import manage_assets, AssetData
+        from mcp_server_snipeit import manage_assets, AssetData
         result = get_tool_fn(manage_assets)(action="create", asset_data=AssetData())
         assert result["success"] is False
 
     def test_get_by_id(self, mock_client, mock_direct_api):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         mock_direct_api._request.return_value = {"id": 1, "name": "Test Asset"}
         result = get_tool_fn(manage_assets)(action="get", asset_id=1)
         assert result["success"] is True
@@ -52,27 +52,27 @@ class TestManageAssets:
         mock_direct_api._request.assert_called_with("GET", "hardware/1")
 
     def test_get_by_tag(self, mock_direct_api, mock_client):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         mock_direct_api._request.return_value = {"id": 1, "asset_tag": "LAP-001"}
         result = get_tool_fn(manage_assets)(action="get", asset_tag="LAP-001")
         assert result["success"] is True
         mock_direct_api._request.assert_called_with("GET", "hardware/bytag/LAP-001")
 
     def test_get_by_serial(self, mock_direct_api, mock_client):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         mock_direct_api._request.return_value = {"rows": [{"id": 1, "serial": "ABC"}], "total": 1}
         result = get_tool_fn(manage_assets)(action="get", serial="ABC")
         assert result["success"] is True
         mock_direct_api._request.assert_called_with("GET", "hardware/byserial/ABC")
 
     def test_get_missing_id(self):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         result = get_tool_fn(manage_assets)(action="get")
         assert result["success"] is False
         assert "required" in result["error"].lower()
 
     def test_list(self, mock_client, mock_direct_api):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         mock_direct_api._request.return_value = {"rows": [], "total": 0}
         result = get_tool_fn(manage_assets)(action="list")
         assert result["success"] is True
@@ -80,7 +80,7 @@ class TestManageAssets:
 
     def test_list_default_sort(self, mock_client, mock_direct_api):
         """list() without explicit sort should default to sort=id, order=asc for stable pagination."""
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         mock_direct_api._request.return_value = {"rows": [], "total": 0}
         result = get_tool_fn(manage_assets)(action="list")
         assert result["success"] is True
@@ -89,7 +89,7 @@ class TestManageAssets:
         assert call_params["order"] == "asc", "Default order should be 'asc' for stable pagination"
 
     def test_list_with_filters(self, mock_client, mock_direct_api):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         mock_direct_api._request.return_value = {"rows": [], "total": 0}
         result = get_tool_fn(manage_assets)(action="list", status_id=1, model_id=5, location_id=10)
         assert result["success"] is True
@@ -98,13 +98,13 @@ class TestManageAssets:
         assert call_params.get("model_id") == 5
 
     def test_list_with_sort(self, mock_client, mock_direct_api):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         mock_direct_api._request.return_value = {"rows": [], "total": 0}
         result = get_tool_fn(manage_assets)(action="list", sort="name", order="asc")
         assert result["success"] is True
 
     def test_update(self, mock_client, mock_direct_api):
-        from snipeit_mcp import manage_assets, AssetData
+        from mcp_server_snipeit import manage_assets, AssetData
         mock_direct_api._request.return_value = {"status": "success", "payload": {"id": 1, "name": "Updated"}}
         result = get_tool_fn(manage_assets)(action="update", asset_id=1, asset_data=AssetData(name="Updated"))
         assert result["success"] is True
@@ -112,7 +112,7 @@ class TestManageAssets:
 
     @pytest.mark.asyncio
     async def test_tool_run_accepts_dict_asset_data(self, mock_client, mock_direct_api):
-        import snipeit_mcp as server
+        import mcp_server_snipeit as server
 
         tool = await server.mcp.get_tool("manage_assets")
         mock_direct_api._request.return_value = {"status": "success", "payload": {"id": 1, "name": "Test Laptop"}}
@@ -132,7 +132,7 @@ class TestManageAssets:
 
     @pytest.mark.asyncio
     async def test_tool_run_accepts_dict_extra_fields(self, mock_client, mock_direct_api):
-        import snipeit_mcp as server
+        import mcp_server_snipeit as server
 
         tool = await server.mcp.get_tool("manage_assets")
         mock_direct_api._request.side_effect = [
@@ -154,24 +154,24 @@ class TestManageAssets:
         ]
 
     def test_update_missing_id(self, mock_client):
-        from snipeit_mcp import manage_assets, AssetData
+        from mcp_server_snipeit import manage_assets, AssetData
         result = get_tool_fn(manage_assets)(action="update", asset_data=AssetData(name="X"))
         assert result["success"] is False
 
     def test_delete(self, mock_client):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         result = get_tool_fn(manage_assets)(action="delete", asset_id=1)
         assert result["success"] is True
         assert result["action"] == "delete"
 
     def test_delete_missing_id(self, mock_client):
-        from snipeit_mcp import manage_assets
+        from mcp_server_snipeit import manage_assets
         result = get_tool_fn(manage_assets)(action="delete")
         assert result["success"] is False
 
 class TestAssetOperations:
     def test_checkout(self, mock_client):
-        from snipeit_mcp import asset_operations, CheckoutData
+        from mcp_server_snipeit import asset_operations, CheckoutData
         asset = MagicMock()
         asset.id = 1
         mock_client.assets.get.return_value = asset
@@ -186,14 +186,14 @@ class TestAssetOperations:
         assert result["action"] == "checkout"
 
     def test_checkout_missing_data(self, mock_client):
-        from snipeit_mcp import asset_operations
+        from mcp_server_snipeit import asset_operations
         asset = MagicMock()
         mock_client.assets.get.return_value = asset
         result = get_tool_fn(asset_operations)(action="checkout", asset_id=1)
         assert result["success"] is False
 
     def test_checkin(self, mock_client):
-        from snipeit_mcp import asset_operations
+        from mcp_server_snipeit import asset_operations
         asset = MagicMock()
         asset.id = 1
         mock_client.assets.get.return_value = asset
@@ -205,7 +205,7 @@ class TestAssetOperations:
         assert result["action"] == "checkin"
 
     def test_audit(self, mock_client):
-        from snipeit_mcp import asset_operations, AuditData
+        from mcp_server_snipeit import asset_operations, AuditData
         asset = MagicMock()
         asset.id = 1
         mock_client.assets.get.return_value = asset
@@ -220,7 +220,7 @@ class TestAssetOperations:
         assert result["action"] == "audit"
 
     def test_restore(self, mock_client):
-        from snipeit_mcp import asset_operations
+        from mcp_server_snipeit import asset_operations
         asset = MagicMock()
         asset.id = 1
         mock_client.assets.get.return_value = asset
@@ -233,7 +233,7 @@ class TestAssetOperations:
 
 class TestAssetFiles:
     def test_upload(self, mock_client, mock_direct_api):
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
         mock_direct_api.upload_files.return_value = {"status": "success"}
         result = get_tool_fn(asset_files)(
             action="upload", asset_id=1, file_paths=["/tmp/test.pdf"], notes="sold"
@@ -252,7 +252,7 @@ class TestAssetFiles:
         Snipe-IT answered "Invalid JSON", attaching nothing.
         """
         import responses
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
 
         a = tmp_path / "a.jpg"
         a.write_bytes(b"jpeg-a")
@@ -279,7 +279,7 @@ class TestAssetFiles:
 
     def test_upload_status_error_is_failure(self, mock_client, tmp_path):
         import responses
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
 
         f = tmp_path / "a.jpg"
         f.write_bytes(b"x")
@@ -292,58 +292,58 @@ class TestAssetFiles:
         assert "No files were submitted" in result["error"]
 
     def test_upload_missing_paths(self, mock_client):
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
         result = get_tool_fn(asset_files)(action="upload", asset_id=1)
         assert result["success"] is False
 
     def test_list(self, mock_client):
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
         mock_client.assets.list_files.return_value = []
         result = get_tool_fn(asset_files)(action="list", asset_id=1)
         assert result["success"] is True
 
     def test_download(self, mock_client):
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
         mock_client.assets.download_file.return_value = "/tmp/file.pdf"
         result = get_tool_fn(asset_files)(action="download", asset_id=1, file_id=5, save_path="/tmp/file.pdf")
         assert result["success"] is True
 
     def test_download_missing_file_id(self, mock_client):
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
         result = get_tool_fn(asset_files)(action="download", asset_id=1)
         assert result["success"] is False
 
     def test_delete(self, mock_client):
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
         result = get_tool_fn(asset_files)(action="delete", asset_id=1, file_id=5)
         assert result["success"] is True
 
     def test_delete_missing_file_id(self, mock_client):
-        from snipeit_mcp import asset_files
+        from mcp_server_snipeit import asset_files
         result = get_tool_fn(asset_files)(action="delete", asset_id=1)
         assert result["success"] is False
 
 class TestAssetLabels:
     def test_by_ids(self, mock_client):
-        from snipeit_mcp import asset_labels
+        from mcp_server_snipeit import asset_labels
         mock_client.assets.generate_labels.return_value = "/tmp/labels.pdf"
         result = get_tool_fn(asset_labels)(asset_ids=[1, 2, 3])
         assert result["success"] is True
 
     def test_by_tags(self, mock_client):
-        from snipeit_mcp import asset_labels
+        from mcp_server_snipeit import asset_labels
         mock_client.assets.generate_labels.return_value = "/tmp/labels.pdf"
         result = get_tool_fn(asset_labels)(asset_tags=["LAP-001", "LAP-002"])
         assert result["success"] is True
 
     def test_missing_both(self, mock_client):
-        from snipeit_mcp import asset_labels
+        from mcp_server_snipeit import asset_labels
         result = get_tool_fn(asset_labels)()
         assert result["success"] is False
 
 class TestAssetMaintenance:
     def test_create(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance, MaintenanceData
+        from mcp_server_snipeit import asset_maintenance, MaintenanceData
         mock_direct_api._request.return_value = {"status": "success", "payload": {"id": 1}}
         result = get_tool_fn(asset_maintenance)(
             action="create", asset_id=1,
@@ -356,7 +356,7 @@ class TestAssetMaintenance:
         })
 
     def test_create_with_optional_fields(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance, MaintenanceData
+        from mcp_server_snipeit import asset_maintenance, MaintenanceData
         mock_direct_api._request.return_value = {"status": "success", "payload": {"id": 2}}
         result = get_tool_fn(asset_maintenance)(
             action="create", asset_id=1,
@@ -373,7 +373,7 @@ class TestAssetMaintenance:
         assert payload["expected_completion_date"] == "2026-09-01"
 
     def test_create_missing_asset_id(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance, MaintenanceData
+        from mcp_server_snipeit import asset_maintenance, MaintenanceData
         result = get_tool_fn(asset_maintenance)(
             action="create",
             maintenance_data=MaintenanceData(asset_improvement="Repair", supplier_id=1, title="Fix")
@@ -381,12 +381,12 @@ class TestAssetMaintenance:
         assert result["success"] is False
 
     def test_create_missing_data(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance
+        from mcp_server_snipeit import asset_maintenance
         result = get_tool_fn(asset_maintenance)(action="create", asset_id=1)
         assert result["success"] is False
 
     def test_list(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance
+        from mcp_server_snipeit import asset_maintenance
         mock_direct_api.list_page.return_value = ([{"id": 1, "title": "RAM"}], 1)
         result = get_tool_fn(asset_maintenance)(action="list", asset_id=5)
         assert result["success"] is True
@@ -394,14 +394,14 @@ class TestAssetMaintenance:
         assert mock_direct_api.list_page.call_args.kwargs["extra_params"] == {"asset_id": 5}
 
     def test_list_completed_filter(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance
+        from mcp_server_snipeit import asset_maintenance
         mock_direct_api.list_page.return_value = ([], 0)
         result = get_tool_fn(asset_maintenance)(action="list", completed=False)
         assert result["success"] is True
         assert mock_direct_api.list_page.call_args.kwargs["extra_params"] == {"completed": "false"}
 
     def test_get(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance
+        from mcp_server_snipeit import asset_maintenance
         mock_direct_api.get.return_value = {"id": 3, "title": "Fix"}
         result = get_tool_fn(asset_maintenance)(action="get", maintenance_id=3)
         assert result["success"] is True
@@ -409,12 +409,12 @@ class TestAssetMaintenance:
         mock_direct_api.get.assert_called_with("maintenances", 3)
 
     def test_get_missing_id(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance
+        from mcp_server_snipeit import asset_maintenance
         result = get_tool_fn(asset_maintenance)(action="get")
         assert result["success"] is False
 
     def test_update(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance, MaintenanceUpdateData
+        from mcp_server_snipeit import asset_maintenance, MaintenanceUpdateData
         mock_direct_api.update.return_value = {"status": "success"}
         result = get_tool_fn(asset_maintenance)(
             action="update", maintenance_id=3,
@@ -424,20 +424,20 @@ class TestAssetMaintenance:
         mock_direct_api.update.assert_called_with("maintenances", 3, {"cost": 99.0, "notes": "done"})
 
     def test_update_empty_data(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance, MaintenanceUpdateData
+        from mcp_server_snipeit import asset_maintenance, MaintenanceUpdateData
         result = get_tool_fn(asset_maintenance)(
             action="update", maintenance_id=3, update_data=MaintenanceUpdateData()
         )
         assert result["success"] is False
 
     def test_delete(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance
+        from mcp_server_snipeit import asset_maintenance
         result = get_tool_fn(asset_maintenance)(action="delete", maintenance_id=4)
         assert result["success"] is True
         mock_direct_api.delete.assert_called_with("maintenances", 4)
 
     def test_complete(self, mock_direct_api):
-        from snipeit_mcp import asset_maintenance
+        from mcp_server_snipeit import asset_maintenance
         mock_direct_api._request.return_value = {"status": "success"}
         result = get_tool_fn(asset_maintenance)(action="complete", maintenance_id=5, note="all good")
         assert result["success"] is True
@@ -446,7 +446,7 @@ class TestAssetMaintenance:
 
 class TestAssetLicenses:
     def test_list(self, mock_client):
-        from snipeit_mcp import asset_licenses
+        from mcp_server_snipeit import asset_licenses
         mock_client.assets.get_licenses.return_value = []
         result = get_tool_fn(asset_licenses)(asset_id=1)
         assert result["success"] is True
@@ -454,7 +454,7 @@ class TestAssetLicenses:
 
 class TestAssetRequests:
     def test_request(self, mock_direct_api):
-        from snipeit_mcp import asset_requests
+        from mcp_server_snipeit import asset_requests
         mock_direct_api._request.return_value = {"status": "success"}
         result = get_tool_fn(asset_requests)(action="request", asset_id=123)
         assert result["success"] is True
@@ -462,7 +462,7 @@ class TestAssetRequests:
         mock_direct_api._request.assert_called_with("POST", "account/request/123", json=None)
 
     def test_request_with_data(self, mock_direct_api):
-        from snipeit_mcp import asset_requests, AssetRequestData
+        from mcp_server_snipeit import asset_requests, AssetRequestData
         mock_direct_api._request.return_value = {"status": "success"}
         result = get_tool_fn(asset_requests)(
             action="request", asset_id=123,
@@ -471,7 +471,7 @@ class TestAssetRequests:
         assert result["success"] is True
 
     def test_cancel(self, mock_direct_api):
-        from snipeit_mcp import asset_requests
+        from mcp_server_snipeit import asset_requests
         mock_direct_api._request.return_value = {"status": "success"}
         result = get_tool_fn(asset_requests)(action="cancel", asset_id=123)
         assert result["success"] is True
@@ -479,12 +479,12 @@ class TestAssetRequests:
         mock_direct_api._request.assert_called_with("POST", "account/request/123/cancel")
 
     def test_request_missing_asset_id(self, mock_direct_api):
-        from snipeit_mcp import asset_requests
+        from mcp_server_snipeit import asset_requests
         result = get_tool_fn(asset_requests)(action="request")
         assert result["success"] is False
 
     def test_list_own_requests(self, mock_direct_api):
-        from snipeit_mcp import asset_requests
+        from mcp_server_snipeit import asset_requests
         mock_direct_api._request.return_value = {"rows": [{"id": 1}], "total": 1}
         result = get_tool_fn(asset_requests)(action="list")
         assert result["success"] is True
@@ -492,7 +492,7 @@ class TestAssetRequests:
         mock_direct_api._request.assert_called_with("GET", "account/requests")
 
     def test_requestable(self, mock_direct_api):
-        from snipeit_mcp import asset_requests
+        from mcp_server_snipeit import asset_requests
         mock_direct_api._request.return_value = {"rows": [{"id": 7}], "total": 1}
         result = get_tool_fn(asset_requests)(action="requestable", search="laptop")
         assert result["success"] is True
@@ -504,7 +504,7 @@ class TestAssetRequests:
 
 class TestBulkAssetOperations:
     def test_edit(self, mock_direct_api):
-        from snipeit_mcp import bulk_asset_operations
+        from mcp_server_snipeit import bulk_asset_operations
         mock_direct_api._request.return_value = {"status": "success", "payload": None}
         result = get_tool_fn(bulk_asset_operations)(
             action="edit", asset_ids=[1, 2, 3], fields={"status_id": 4})
@@ -513,18 +513,18 @@ class TestBulkAssetOperations:
             "PATCH", "hardware/bulk", json={"ids": [1, 2, 3], "status_id": 4})
 
     def test_edit_missing_fields(self, mock_direct_api):
-        from snipeit_mcp import bulk_asset_operations
+        from mcp_server_snipeit import bulk_asset_operations
         result = get_tool_fn(bulk_asset_operations)(action="edit", asset_ids=[1])
         assert result["success"] is False
 
     def test_edit_empty_ids(self, mock_direct_api):
-        from snipeit_mcp import bulk_asset_operations
+        from mcp_server_snipeit import bulk_asset_operations
         result = get_tool_fn(bulk_asset_operations)(
             action="edit", asset_ids=[], fields={"status_id": 4})
         assert result["success"] is False
 
     def test_audit(self, mock_direct_api):
-        from snipeit_mcp import bulk_asset_operations
+        from mcp_server_snipeit import bulk_asset_operations
         mock_direct_api._request.return_value = {"status": "success"}
         result = get_tool_fn(bulk_asset_operations)(
             action="audit", asset_ids=[5, 6], note="annual audit",
@@ -536,7 +536,7 @@ class TestBulkAssetOperations:
                   "update_location": "1", "next_audit_date": "2027-08-24"})
 
     def test_audit_minimal(self, mock_direct_api):
-        from snipeit_mcp import bulk_asset_operations
+        from mcp_server_snipeit import bulk_asset_operations
         mock_direct_api._request.return_value = {"status": "success"}
         result = get_tool_fn(bulk_asset_operations)(action="audit", asset_ids=[9])
         assert result["success"] is True
@@ -544,7 +544,7 @@ class TestBulkAssetOperations:
             "POST", "hardware/audit/bulk", json={"ids": [9]})
 
     def test_error_surfaces(self, mock_direct_api):
-        from snipeit_mcp import bulk_asset_operations, SnipeITException
+        from mcp_server_snipeit import bulk_asset_operations, SnipeITException
         mock_direct_api._request.side_effect = SnipeITException("boom")
         result = get_tool_fn(bulk_asset_operations)(
             action="edit", asset_ids=[1], fields={"name": "x"})

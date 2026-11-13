@@ -18,14 +18,14 @@ import os
 
 import pytest
 
-from snipeit_mcp.config import (
+from mcp_server_snipeit.config import (
     AuthMode,
     ConfigError,
     SnipeITAuthConfig,
     TransportConfig,
     TransportType,
 )
-from snipeit_mcp.identity import (
+from mcp_server_snipeit.identity import (
     Identity,
     IdentityRegistry,
     load_identity_registry,
@@ -338,12 +338,12 @@ class TestAuthModeResolution:
 
 class TestIdentityContextVar:
     def test_default_is_none(self):
-        from snipeit_mcp.identity import current_identity
+        from mcp_server_snipeit.identity import current_identity
 
         assert current_identity.get() is None
 
     def test_set_and_reset(self):
-        from snipeit_mcp.identity import Identity, current_identity
+        from mcp_server_snipeit.identity import Identity, current_identity
 
         identity = Identity(key="ALICE", mcp_token=TOKEN_A, snipeit_token=SNIPEIT_TOKEN_A)
         token = current_identity.set(identity)

@@ -34,7 +34,7 @@ class TestModelFilesTransfer:
 
     def test_upload_sends_file_array(self, tmp_path):
         import responses
-        from snipeit_mcp import model_files
+        from mcp_server_snipeit import model_files
 
         f = tmp_path / "manual.pdf"
         f.write_bytes(b"pdf-bytes")
@@ -53,7 +53,7 @@ class TestModelFilesTransfer:
     def test_upload_status_error_is_failure(self, tmp_path):
         """Regression: a single ``file`` field got HTTP 200 status=error, reported as success."""
         import responses
-        from snipeit_mcp import model_files
+        from mcp_server_snipeit import model_files
 
         f = tmp_path / "manual.pdf"
         f.write_bytes(b"x")
@@ -67,7 +67,7 @@ class TestModelFilesTransfer:
 
     def test_list_maps_note(self):
         import responses
-        from snipeit_mcp import model_files
+        from mcp_server_snipeit import model_files
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.GET, f"{BASE}/models/1/files", json={
@@ -83,7 +83,7 @@ class TestModelFilesTransfer:
 
     def test_download_saves_file(self, tmp_path):
         import responses
-        from snipeit_mcp import model_files
+        from mcp_server_snipeit import model_files
 
         save_path = tmp_path / "out" / "manual.pdf"
         with responses.RequestsMock() as rsps:
@@ -100,7 +100,7 @@ class TestModelFilesTransfer:
 
     def test_download_status_error_writes_nothing(self, tmp_path):
         import responses
-        from snipeit_mcp import model_files
+        from mcp_server_snipeit import model_files
 
         save_path = tmp_path / "manual.pdf"
         with responses.RequestsMock() as rsps:
@@ -116,7 +116,7 @@ class TestModelFilesTransfer:
 
     def test_delete_uses_delete_suffix(self):
         import responses
-        from snipeit_mcp import model_files
+        from mcp_server_snipeit import model_files
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.DELETE, f"{BASE}/models/1/files/42/delete",
@@ -131,7 +131,7 @@ class TestLicenseFilesTransfer:
 
     def test_upload_sends_file_array(self, tmp_path):
         import responses
-        from snipeit_mcp import license_files
+        from mcp_server_snipeit import license_files
 
         f = tmp_path / "license.pdf"
         f.write_bytes(b"license-bytes")
@@ -148,7 +148,7 @@ class TestLicenseFilesTransfer:
 
     def test_list(self):
         import responses
-        from snipeit_mcp import license_files
+        from mcp_server_snipeit import license_files
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.GET, f"{BASE}/licenses/5/files",
@@ -162,7 +162,7 @@ class TestLicenseFilesTransfer:
 
     def test_download_saves_file(self, tmp_path):
         import responses
-        from snipeit_mcp import license_files
+        from mcp_server_snipeit import license_files
 
         save_path = tmp_path / "license.pdf"
         with responses.RequestsMock() as rsps:
@@ -177,7 +177,7 @@ class TestLicenseFilesTransfer:
 
     def test_delete_uses_delete_suffix(self):
         import responses
-        from snipeit_mcp import license_files
+        from mcp_server_snipeit import license_files
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.DELETE, f"{BASE}/licenses/5/files/9/delete",
@@ -191,7 +191,7 @@ class TestManageImportsUpload:
     def test_upload_sends_files_array(self, tmp_path):
         """Regression: ImportController::store loops over ``files[]``; ``file`` got a 422."""
         import responses
-        from snipeit_mcp import manage_imports
+        from mcp_server_snipeit import manage_imports
 
         f = tmp_path / "assets.csv"
         f.write_text("asset_tag,name\nA1,Laptop\n")
@@ -209,7 +209,7 @@ class TestManageImportsUpload:
 
     def test_upload_422_is_failure(self, tmp_path):
         import responses
-        from snipeit_mcp import manage_imports
+        from mcp_server_snipeit import manage_imports
 
         f = tmp_path / "assets.csv"
         f.write_text("x")
@@ -224,13 +224,13 @@ class TestManageImportsUpload:
 
 class TestManageBackupsDownload:
     def test_download_invokes_requests_with_bearer_token(self, mock_direct_api, tmp_path):
-        from snipeit_mcp import manage_backups
+        from mcp_server_snipeit import manage_backups
 
         mock_direct_api.base_url = "https://test.snipeit.com"
         mock_direct_api.headers = {"Authorization": "Bearer test-token-12345"}
         save_path = tmp_path / "backups" / "backup.sql"
 
-        with patch("snipeit_mcp.tools.system.requests") as req:
+        with patch("mcp_server_snipeit.tools.system.requests") as req:
             req.get.return_value = _stub_response(content=b"sql-dump")
             result = get_tool_fn(manage_backups)(
                 action="download", filename="backup.sql", save_path=str(save_path)

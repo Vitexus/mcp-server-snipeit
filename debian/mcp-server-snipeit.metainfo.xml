@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="console-application">
+  <id>io.github.vitexsoftware.mcp-server-snipeit</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>mcp-server-snipeit</name>
+  <summary>MCP server for the Snipe-IT asset management system</summary>
+  <description>
+    <p>
+      An MCP (Model Context Protocol) server that exposes the Snipe-IT REST
+      API as tools for an LLM agent, built on fastmcp. It runs over stdio and
+      is registered into a local mcprack catalog by its companion package.
+    </p>
+    <p>
+      Tools cover assets, consumables, accessories, components, licenses,
+      users, locations, models, kits, custom fields, imports and reports.
+      A read-only mode refuses every state-changing action.
+    </p>
+  </description>
+  <developer id="cz.vitexsoftware">
+    <name>Vitex Software</name>
+  </developer>
+  <url type="homepage">https://github.com/Vitexus/mcp-server-snipeit</url>
+  <url type="vcs-browser">https://github.com/Vitexus/mcp-server-snipeit</url>
+  <url type="bugtracker">https://github.com/Vitexus/mcp-server-snipeit/issues</url>
+  <provides>
+    <binary>mcp-server-snipeit</binary>
+  </provides>
+</component>

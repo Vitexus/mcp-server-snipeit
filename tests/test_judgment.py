@@ -11,10 +11,10 @@ import pytest
 import requests
 import responses
 
-from snipeit_mcp import judgment
-from snipeit_mcp.chat_judge import ChatJudgeClient
-from snipeit_mcp.config import ConfigError
-from snipeit_mcp.judgment import (
+from mcp_server_snipeit import judgment
+from mcp_server_snipeit.chat_judge import ChatJudgeClient
+from mcp_server_snipeit.config import ConfigError
+from mcp_server_snipeit.judgment import (
     JUDGMENT_ENV_VARS,
     JudgmentConfig,
     JudgmentError,
@@ -25,7 +25,7 @@ from snipeit_mcp.judgment import (
     get_backend,
     post_json,
 )
-from snipeit_mcp.systemone import SystemOneClient
+from mcp_server_snipeit.systemone import SystemOneClient
 
 URL = "https://judge.example/v1/systemone"
 BODY = {"state": "s", "model": "m", "questions": {"q": {"type": "noul"}}}

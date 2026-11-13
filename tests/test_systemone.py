@@ -10,8 +10,8 @@ from unittest.mock import patch
 import pytest
 import responses
 
-from snipeit_mcp.judgment import JUDGMENT_ENV_VARS, JudgmentConfig, JudgmentError, get_backend
-from snipeit_mcp.systemone import SystemOneClient
+from mcp_server_snipeit.judgment import JUDGMENT_ENV_VARS, JudgmentConfig, JudgmentError, get_backend
+from mcp_server_snipeit.systemone import SystemOneClient
 
 URL = "https://api.typesafe.ai/v1/systemone"
 QUESTIONS = {"q": {"type": "noul", "instructions": "Is it?"}}

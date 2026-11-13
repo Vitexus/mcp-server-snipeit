@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 import responses
 
-from snipeit_mcp.chat_judge import (
+from mcp_server_snipeit.chat_judge import (
     SAMPLING_TEMPERATURE,
     SYSTEM_PROMPT,
     ChatJudgeClient,
@@ -22,7 +22,7 @@ from snipeit_mcp.chat_judge import (
     render_questions,
     validate_reply,
 )
-from snipeit_mcp.judgment import JUDGMENT_ENV_VARS, JudgmentConfig, JudgmentError, get_backend
+from mcp_server_snipeit.judgment import JUDGMENT_ENV_VARS, JudgmentConfig, JudgmentError, get_backend
 
 CHAT_URL = "http://localhost:11434/v1/chat/completions"
 QUESTIONS = {

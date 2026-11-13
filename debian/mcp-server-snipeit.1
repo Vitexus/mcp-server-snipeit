@@ -1,0 +1,42 @@
+.TH MCP-SERVER-SNIPEIT 1 "November 2026" "mcp-server-snipeit 2.0.1" "User Commands"
+.SH NAME
+mcp-server-snipeit \- MCP server for the Snipe-IT asset management system
+.SH SYNOPSIS
+.B mcp-server-snipeit
+.RB [\|\-\-version \|]
+.RB [\|\-\-help \|]
+.SH DESCRIPTION
+.B mcp-server-snipeit
+is a Model Context Protocol (MCP) server that lets an LLM agent manage a
+Snipe-IT instance: assets, consumables, accessories, components, licenses,
+users, locations, models, kits, custom fields, imports and reports.
+.PP
+It speaks MCP over standard input and output and is normally started by an
+MCP client or by mcprack rather than by hand.
+.SH OPTIONS
+.TP
+.B \-\-version
+Print the version and exit.
+.TP
+.B \-\-help
+Print a short help text and exit.
+.SH ENVIRONMENT
+.TP
+.B SNIPEIT_URL
+Base URL of the Snipe-IT instance (required).
+.TP
+.B SNIPEIT_TOKEN
+API token (secret). Required unless OAuth or multi-identity mode is used.
+.TP
+.B SNIPEIT_READ_ONLY
+When "true", every state-changing tool action is refused.
+.TP
+.B SNIPEIT_ALLOWED_TOOLS
+Comma-separated tool allowlist.
+.TP
+.B MCP_TRANSPORT
+"stdio" (default) or "http".
+.SH SEE ALSO
+.BR mcprack (1)
+.SH AUTHOR
+Upstream: James Gordy. Debian packaging: Vítězslav Dvořák.

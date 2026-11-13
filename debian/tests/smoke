@@ -1,0 +1,10 @@
+#!/bin/sh
+# DEP-8 smoke test: spawn the real installed binary, perform the MCP
+# handshake, and print the tools/resources/prompts it serves. A broken
+# runtime dependency (python3-fastmcp, python3-snipeit-api, ...) makes the
+# server crash on import, which fails the probe with a non-zero exit.
+set -e
+mcp-server-snipeit --version
+snipeit-mcp --version
+export SNIPEIT_URL=https://snipeit.invalid SNIPEIT_TOKEN=dummy
+mcprack server probe /usr/bin/mcp-server-snipeit --set-env SNIPEIT_READ_ONLY=true

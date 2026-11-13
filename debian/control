@@ -1,0 +1,48 @@
+Source: mcp-server-snipeit
+Section: python
+Priority: optional
+Maintainer: Vítězslav Dvořák <info@vitexsoftware.cz>
+Build-Depends:
+ appstream,
+ debhelper-compat (= 13),
+ dh-python,
+ pybuild-plugin-pyproject,
+ python3-all,
+ python3-setuptools,
+Standards-Version: 4.7.0
+Homepage: https://github.com/Vitexus/mcp-server-snipeit
+Vcs-Git: https://github.com/Vitexus/mcp-server-snipeit.git
+Vcs-Browser: https://github.com/Vitexus/mcp-server-snipeit
+Rules-Requires-Root: no
+
+Package: mcp-server-snipeit
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ python3-fastmcp (>= 4.1.4),
+ python3-requests,
+ python3-snipeit-api (>= 0.5.2),
+Provides: snipeit-mcp
+Description: MCP server for the Snipe-IT asset management system
+ Model Context Protocol (MCP) server that lets an LLM agent manage a
+ Snipe-IT instance: assets, consumables, accessories, components, licenses,
+ users, locations, models, kits, custom fields, imports and reports.
+ .
+ Runs over stdio by default. Credentials (SNIPEIT_URL, SNIPEIT_TOKEN) are
+ read from the environment. Set SNIPEIT_READ_ONLY=true to refuse every
+ state-changing action. Ships the mcprack manifest at
+ /usr/share/mcp-server-snipeit/server.json; the upstream binary name
+ snipeit-mcp is also installed.
+
+Package: mcprack-mcp-server-snipeit
+Architecture: all
+Depends:
+ ${misc:Depends},
+ mcprack (>= 1.6.0),
+ mcp-server-snipeit (= ${binary:Version}),
+Description: Registers Snipe-IT MCP server into mcprack catalog
+ Companion package for mcp-server-snipeit. Installing it registers
+ the mcp-server-snipeit binary as an available MCP server in the local
+ mcprack instance in read-only mode; removing it unregisters it again.

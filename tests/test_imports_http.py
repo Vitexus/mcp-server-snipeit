@@ -32,7 +32,7 @@ class TestManageImportsHttp:
     def test_list_bare_array(self):
         """Regression: list crashed with "'list' object has no attribute 'get'"."""
         import responses
-        from snipeit_mcp import manage_imports
+        from mcp_server_snipeit import manage_imports
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.GET, f"{BASE}/imports", json=[IMPORT])
@@ -42,7 +42,7 @@ class TestManageImportsHttp:
 
     def test_list_empty(self):
         import responses
-        from snipeit_mcp import manage_imports
+        from mcp_server_snipeit import manage_imports
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.GET, f"{BASE}/imports", json=[])
@@ -54,7 +54,7 @@ class TestManageImportsHttp:
     def test_get_uses_index_not_show(self):
         """GET imports/{id} is a 500 in v8.8.1 (no show()); get reads the index."""
         import responses
-        from snipeit_mcp import manage_imports
+        from mcp_server_snipeit import manage_imports
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.GET, f"{BASE}/imports", json=[{"id": 1}, IMPORT])
@@ -66,7 +66,7 @@ class TestManageImportsHttp:
 
     def test_process_sends_type_and_mapping(self):
         import responses
-        from snipeit_mcp import manage_imports, ImportData
+        from mcp_server_snipeit import manage_imports, ImportData
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.POST, f"{BASE}/imports/process/2",
@@ -89,7 +89,7 @@ class TestManageImportsHttp:
     def test_process_validation_error_is_failure(self):
         """Missing import-type comes back as HTTP 200 {"status": "error"}."""
         import responses
-        from snipeit_mcp import manage_imports, ImportData
+        from mcp_server_snipeit import manage_imports, ImportData
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.POST, f"{BASE}/imports/process/2",
@@ -105,7 +105,7 @@ class TestManageImportsHttp:
     def test_process_import_errors_surface_messages(self):
         """Row errors are HTTP 500 {"status": "import-errors"}; keep the messages."""
         import responses
-        from snipeit_mcp import manage_imports, ImportData
+        from mcp_server_snipeit import manage_imports, ImportData
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.POST, f"{BASE}/imports/process/2", status=500,
@@ -122,7 +122,7 @@ class TestManageImportsHttp:
 
     def test_process_500_without_json_is_failure(self):
         import responses
-        from snipeit_mcp import manage_imports, ImportData
+        from mcp_server_snipeit import manage_imports, ImportData
 
         with responses.RequestsMock() as rsps:
             rsps.add(responses.POST, f"{BASE}/imports/process/2", status=500, body="<html>oops</html>")

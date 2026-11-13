@@ -1,0 +1,13 @@
+mcp-server-snipeit (2.0.1-1) unstable; urgency=medium
+
+  * Initial Debian packaging of jameshgordy/snipeit-mcp 2.0.1 (MIT).
+    Upstream base: 2e35de1 (2026-11-13).
+  * Port to fastmcp >= 4.1.4 and snipeit-api 0.5.2 (python3-snipeit-api)
+    instead of the git-pinned snipeit-api 0.1.0.
+  * Rename module to mcp_server_snipeit and binary to mcp-server-snipeit;
+    snipeit-mcp kept as compatibility alias.
+  * Add titles and shared annotation constants to every tool.
+  * Add SNIPEIT_READ_ONLY mode, --version/--help.
+  * Add mcprack companion package (registered read-only).
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Fri, 13 Nov 2026 15:00:00 +0100

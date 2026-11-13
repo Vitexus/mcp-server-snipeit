@@ -18,10 +18,10 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 import responses
 
-from snipeit_mcp import find_duplicates, match_records
-from snipeit_mcp.judgment import JUDGMENT_ENV_VARS, JudgmentConfig
-from snipeit_mcp.tools import data_quality as dq
-from snipeit_mcp.tools.data_quality import (
+from mcp_server_snipeit import find_duplicates, match_records
+from mcp_server_snipeit.judgment import JUDGMENT_ENV_VARS, JudgmentConfig
+from mcp_server_snipeit.tools import data_quality as dq
+from mcp_server_snipeit.tools.data_quality import (
     ENTITY_SPECS,
     NONE_OPTION,
     candidate_pairs,
@@ -752,7 +752,7 @@ class TestMatchRecords:
 
 class TestVisibility:
     async def test_hidden_without_backend_visible_with_one(self, no_judgment_env):
-        from snipeit_mcp.mcp_server import JUDGMENT_TOOLS, apply_tool_whitelist, mcp
+        from mcp_server_snipeit.mcp_server import JUDGMENT_TOOLS, apply_tool_whitelist, mcp
 
         try:
             apply_tool_whitelist("")
@@ -781,7 +781,7 @@ class TestVisibility:
             apply_tool_whitelist("")
 
     async def test_tools_are_read_only(self, no_judgment_env):
-        from snipeit_mcp.mcp_server import JUDGMENT_TOOLS, apply_tool_whitelist, mcp
+        from mcp_server_snipeit.mcp_server import JUDGMENT_TOOLS, apply_tool_whitelist, mcp
 
         # get_tool() only resolves visible tools, so make them visible first.
         try:

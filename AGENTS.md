@@ -1,7 +1,7 @@
 # snipeit-mcp
 
 MCP server (FastMCP 3) exposing the Snipe-IT API as tools. Source in
-`src/snipeit_mcp` (tools in `tools/`, HTTP client in `client.py`), tests in `tests/`.
+`src/mcp_server_snipeit` (tools in `tools/`, HTTP client in `client.py`), tests in `tests/`.
 
 ## Testing
 

@@ -64,6 +64,53 @@ A comprehensive [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)
 - **Backups**: List and download database backups
 - **LDAP Operations**: LDAP sync and connection testing
 
+## Debian / mcprack (Vitexus fork)
+
+This fork is packaged for Debian/Ubuntu (trixie) as `mcp-server-snipeit` and
+registers into [mcprack](https://github.com/VitexSoftware/mcprack) via the
+companion `mcprack-mcp-server-snipeit` (registered with
+`SNIPEIT_READ_ONLY=true`).
+
+```sh
+sudo apt install mcp-server-snipeit mcprack-mcp-server-snipeit
+```
+
+The binary is `/usr/bin/mcp-server-snipeit` (`snipeit-mcp` is kept as an alias).
+It needs `python3-fastmcp (>= 4.1.4)` and `python3-snipeit-api (>= 0.5.2)`.
+Upstream base: jameshgordy/snipeit-mcp 2.0.1 (2e35de1, 2026-11-13).
+
+### Read-only mode
+
+`SNIPEIT_READ_ONLY=true` refuses every state-changing action
+(`create`, `update`, `delete`, `checkout`, `checkin`, `audit`, `restore`,
+`upload`, `sync`, ...). Snipe-IT tools are multiplexed by an `action`
+argument, so tools stay listed and the write *actions* are rejected.
+
+### Environment variables
+
+| Variable | Secret | Purpose |
+|---|---|---|
+| `SNIPEIT_URL` | no | Snipe-IT base URL (required) |
+| `SNIPEIT_TOKEN` | yes | API token (single-identity mode) |
+| `SNIPEIT_READ_ONLY` | no | Refuse state-changing actions |
+| `SNIPEIT_ALLOWED_TOOLS` | no | Tool allowlist |
+| `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | no | Transport (stdio default) |
+| `MCP_TOKEN` | yes | Bearer token for the http transport |
+| `SNIPEIT_OAUTH_CLIENT_ID`, `SNIPEIT_OAUTH_CLIENT_SECRET`, `SNIPEIT_MCP_BASE_URL`, `SNIPEIT_MCP_REDIRECT_PATH`, `SNIPEIT_OAUTH_CACHE_TTL`, `SNIPEIT_OAUTH_TIMEOUT` | secret: client secret | OAuth mode |
+| `SNIPEIT_IDENTITIES_FILE` | no | Multi-identity registry |
+| `LOG_LEVEL` | no | Log level |
+| `JUDGMENT_BACKEND`, `JUDGMENT_BASE_URL`, `JUDGMENT_MODEL`, `JUDGMENT_API_KEY`, `JUDGMENT_SAMPLES`, `JUDGMENT_TIMEOUT`, `JUDGMENT_TIME_BUDGET` | `JUDGMENT_API_KEY` | Data-quality judgment backend |
+
+### Tool annotation classes
+
+All tools carry a title and all four annotation hints
+(`src/mcp_server_snipeit/annotations.py`). Read-only: `system_info`,
+`asset_licenses`, `user_assets`, `activity_reports`, `status_summary`,
+`audit_tracking`, data-quality tools. Create-like: `asset_operations`,
+`asset_labels`, `asset_requests`, `license_seats`, `ldap_operations`, ...
+Everything named `manage_*` is classified destructive (it can delete).
+The authoritative list is `debian/server.json`.
+
 ## Requirements
 
 - Python 3.11+
@@ -220,7 +267,7 @@ MetaMCP server entry (per person, Ownership: Private)
 2. The identity is stored in a request-scoped context variable; the
    tool call then authenticates to Snipe-IT with **that person's** PAT.
 3. One JSON audit line per tool call goes to stderr (logger
-   `snipeit_mcp.audit`): identity, tool, action, outcome, duration, and a
+   `mcp_server_snipeit.audit`): identity, tool, action, outcome, duration, and a
    SHA-256 digest of the arguments (arguments themselves are never logged,
    and no token ever appears in logs).
 
@@ -810,7 +857,7 @@ All list endpoints return pagination metadata:
 ## Architecture
 
 ```
-src/snipeit_mcp/
+src/mcp_server_snipeit/
 ├── __init__.py        # Public API re-exports
 ├── __main__.py        # Entry point (snipeit-mcp script)
 ├── mcp_server.py      # FastMCP instance + tool whitelist + optional-tool visibility

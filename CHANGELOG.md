@@ -5,6 +5,19 @@ All notable changes to the Snipe-IT MCP Server will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] (Vitexus fork, 2.0.1-1)
+
+### Added
+- Debian packaging (`mcp-server-snipeit`, companion `mcprack-mcp-server-snipeit`).
+- `SNIPEIT_READ_ONLY` mode, `--version`, `--help`, `server.json`, `SKILL.md`.
+- Tool titles and shared annotation constants (`annotations.py`).
+
+### Changed
+- Requires `fastmcp>=4.1.4` (was `<4`) and `snipeit-api>=0.5.2` (was a git pin of 0.1.0).
+- Module renamed `snipeit_mcp` -> `mcp_server_snipeit`; binary `mcp-server-snipeit`
+  (`snipeit-mcp` kept as alias).
+- HTTP end-to-end tests are opt-in (`SNIPEIT_RUN_HTTP_E2E=1`).
+
 ## [2.0.1] - 2026-11-13
 
 Re-release of the judgment-backed data-quality tools from the withdrawn 2.0.0,
@@ -134,7 +147,7 @@ capability. Existing configurations, tools, and payloads behave exactly as in
     and stop submitting work when `JUDGMENT_TIME_BUDGET` (default 300 s) runs
     out, listing skipped items in `errors`. Users are deliberately not
     supported (personal data).
-- **Pluggable judgment backends** (`snipeit_mcp.judgment`, selected with
+- **Pluggable judgment backends** (`mcp_server_snipeit.judgment`, selected with
   `JUDGMENT_BACKEND`), no new dependencies:
   - `systemone` (default): the `POST /v1/systemone` protocol of TypeSafe Jev,
     also served by self-hosted open-weight System One models (Laya, CLM,
@@ -176,7 +189,7 @@ capability. Existing configurations, tools, and payloads behave exactly as in
   context variable. Supports per-identity tool allowlists and a read-only
   flag (enforced at call time and in `tools/list`), plus an unauthenticated
   `GET /healthz` endpoint for healthchecks.
-- **Audit log**: one JSON line per tool call on the `snipeit_mcp.audit`
+- **Audit log**: one JSON line per tool call on the `mcp_server_snipeit.audit`
   logger (stderr) — identity, tool, action, outcome, duration, and a SHA-256
   digest of the arguments. Arguments themselves and any token values are
   never logged.

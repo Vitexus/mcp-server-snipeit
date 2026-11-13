@@ -7,12 +7,12 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from snipeit_mcp.auth import (
+from mcp_server_snipeit.auth import (
     SnipeITOAuthProvider,
     SnipeITTokenVerifier,
     passport_endpoints,
 )
-from snipeit_mcp.config import (
+from mcp_server_snipeit.config import (
     AuthMode,
     ConfigError,
     SnipeITAuthConfig,
@@ -196,7 +196,7 @@ class _StubResponse:
 class TestSnipeITTokenVerifier:
     async def test_verify_valid_token(self):
         verifier = SnipeITTokenVerifier(snipeit_url="https://snipeit.example.com")
-        with patch("snipeit_mcp.auth.httpx.AsyncClient") as client_cls:
+        with patch("mcp_server_snipeit.auth.httpx.AsyncClient") as client_cls:
             client = AsyncMock()
             client.__aenter__.return_value = client
             client.get = AsyncMock(
@@ -212,7 +212,7 @@ class TestSnipeITTokenVerifier:
 
     async def test_verify_rejected_token(self):
         verifier = SnipeITTokenVerifier(snipeit_url="https://snipeit.example.com")
-        with patch("snipeit_mcp.auth.httpx.AsyncClient") as client_cls:
+        with patch("mcp_server_snipeit.auth.httpx.AsyncClient") as client_cls:
             client = AsyncMock()
             client.__aenter__.return_value = client
             client.get = AsyncMock(return_value=_StubResponse(401))
@@ -225,7 +225,7 @@ class TestSnipeITTokenVerifier:
         import httpx
 
         verifier = SnipeITTokenVerifier(snipeit_url="https://snipeit.example.com")
-        with patch("snipeit_mcp.auth.httpx.AsyncClient") as client_cls:
+        with patch("mcp_server_snipeit.auth.httpx.AsyncClient") as client_cls:
             client = AsyncMock()
             client.__aenter__.return_value = client
             client.get = AsyncMock(side_effect=httpx.ConnectError("boom"))
@@ -238,7 +238,7 @@ class TestSnipeITTokenVerifier:
         verifier = SnipeITTokenVerifier(
             snipeit_url="https://snipeit.example.com", cache_ttl_seconds=60
         )
-        with patch("snipeit_mcp.auth.httpx.AsyncClient") as client_cls:
+        with patch("mcp_server_snipeit.auth.httpx.AsyncClient") as client_cls:
             client = AsyncMock()
             client.__aenter__.return_value = client
             get = AsyncMock(return_value=_StubResponse(200, {"id": 7}))
@@ -257,7 +257,7 @@ class TestSnipeITTokenVerifier:
         verifier = SnipeITTokenVerifier(
             snipeit_url="https://snipeit.example.com", cache_ttl_seconds=0
         )
-        with patch("snipeit_mcp.auth.httpx.AsyncClient") as client_cls:
+        with patch("mcp_server_snipeit.auth.httpx.AsyncClient") as client_cls:
             client = AsyncMock()
             client.__aenter__.return_value = client
             get = AsyncMock(return_value=_StubResponse(200, {"id": 7}))
@@ -303,7 +303,7 @@ class TestSnipeITOAuthProvider:
 
 class TestResolveToken:
     def test_falls_back_to_env_when_no_context(self):
-        from snipeit_mcp import client as client_mod
+        from mcp_server_snipeit import client as client_mod
 
         with patch.dict(os.environ, {"SNIPEIT_TOKEN": "env-credential"}, clear=False):
             assert client_mod._resolve_token() == "env-credential"
@@ -311,7 +311,7 @@ class TestResolveToken:
     def test_prefers_oauth_token_over_env(self):
         from fastmcp.server.auth.auth import AccessToken
 
-        from snipeit_mcp import client as client_mod
+        from mcp_server_snipeit import client as client_mod
 
         oauth_access = AccessToken(
             token="oauth-credential",
